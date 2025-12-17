@@ -224,6 +224,9 @@ class VitsDataModule(L.LightningDataModule):
                     audio_norm_array, audio_sample_rate = librosa.load(
                         path=audio_path, sr=self.sample_rate, mono=True
                     )
+                    if not(len(audio_norm_array)):
+                        print(f"Empty source file {audio_path} as {audio_sample_rate}, please fix or remove link in CSV")
+                        
                     if self.trim_silence:
                         if audio_sample_rate != VAD_SAMPLE_RATE:
                             # VAD needs 16Khz
@@ -250,6 +253,7 @@ class VitsDataModule(L.LightningDataModule):
                 if not audio_spec_path.exists():
                     if audio_norm_tensor is None:
                         # Load audio from cache
+                        print(f"Loading {norm_audio_path}")
                         audio_norm_tensor = torch.load(norm_audio_path)
 
                     torch.save(
